@@ -8,13 +8,15 @@ import atheris
 logging.disable(logging.CRITICAL)
 
 with atheris.instrument_imports():
-    import pyresparser
+    from pyresparser import ResumeParser
 
 
 @atheris.instrument_func
 def TestOneInput(data):
-   with tempfile.NamedTemporaryFile(data) as f:
-       pyresparser.ResumeParser(f.name).get_extracted_data()
+   with tempfile.NamedTemporaryFile() as f:
+       f.write(data)
+       f.flush()
+       ResumeParser(f.name).get_extracted_data()
 
 def main():
     atheris.Setup(sys.argv, TestOneInput)
