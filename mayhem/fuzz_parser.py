@@ -2,27 +2,36 @@
 import io
 import logging
 import sys
-import tempfile
+from zipfile import BadZipFile
 
 import atheris
-import spacy
 import warnings
 
 warnings.filterwarnings("ignore")
 logging.disable(logging.CRITICAL)
 
 with atheris.instrument_imports():
-    from pyresparser import ResumeParser
+    import pyresparser.utils as utils
 
-nlp = spacy.load('en_core_web_sm')
+supported_exts = [".pdf", ".doc", ".docx"]
 
 
 @atheris.instrument_func
 def TestOneInput(data):
+    fdp = atheris.FuzzedDataProvider(data)
+    #Pick file extension
+    ext = supported_exts[fdp.ConsumeIntInRange(0, len(supported_exts)-1)]
     fd = io.BytesIO()
-    fd.write(data)
-    fd.name = 'test.pdf'
-    ResumeParser(fd, default_nlp=nlp).get_extracted_data()
+    fd.name = "test" + ext
+    fd.write(fdp.ConsumeBytes(atheris.ALL_REMAINING))
+
+    try:
+        utils.get_number_of_pages(fd)
+        text = ' '.join(utils.extract_text(fd, ext).split())
+        utils.extract_email(text)
+        utils.extract_mobile_number(text)
+    except BadZipFile:
+        pass
 
 
 def main():
