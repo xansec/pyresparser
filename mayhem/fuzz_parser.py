@@ -1,17 +1,17 @@
 #! /usr/bin/python3
 import io
-import logging
+#import logging
 import sys
 from zipfile import BadZipFile
 
 import atheris
-import warnings
+#import warnings
 
-warnings.filterwarnings("ignore")
-logging.disable(logging.CRITICAL)
+#warnings.filterwarnings("ignore")
+#logging.disable(logging.CRITICAL)
 
-with atheris.instrument_imports():
-    import pyresparser.utils as utils
+#with atheris.instrument_imports():
+import pyresparser.utils as utils
 
 supported_exts = [".pdf", ".doc", ".docx"]
 
